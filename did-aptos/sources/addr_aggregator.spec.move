@@ -19,6 +19,7 @@ spec my_addr::addr_aggregator {
     /// The AddrAggregatord should under the signer.
     /// Check addr_info is already exist under the addr.
     /// Max id should not exceed MAX_U64.
+    /// The max_id should plus 1.
     spec add_addr{
         include addr_info::CheckAddrPrefix;
         let account = signer::address_of(acct);
@@ -28,6 +29,7 @@ spec my_addr::addr_aggregator {
         ensures spec_exist_addr_by_map(addr_aggr_post.addr_infos_map,addr);
         ensures contains(addr_aggr_post.addrs, addr);
         ensures addr_aggr.max_id + 1 <= MAX_U64;
+        ensures addr_aggr_post.max_id == addr_aggr.max_id + 1;
     }
 
     spec fun spec_exist_addr_by_map (addr_infos_map: Table<String, AddrInfo>, addr: String): bool {
@@ -36,14 +38,17 @@ spec my_addr::addr_aggregator {
 
     /// The number of 'addr' added should same as the number of 'addrinfo'.
     /// The AddrAggregatord should under the signer.
+    /// The value of max_id after batch_add_addr should plus the number of the addresses.
     spec  batch_add_addr(
         acct: &signer,
         addrs: vector<String>,
         addr_infos : vector<AddrInfo>
     ) {
         let addrs_length = len(addrs);
-        let post addr_aggr = global<AddrAggregator>(signer::address_of(acct));
+        let addr_aggr = global<AddrAggregator>(signer::address_of(acct));
+        let post addr_aggr_post = global<AddrAggregator>(signer::address_of(acct));
         ensures len(addrs) == len(addr_infos);
+        ensures addr_aggr_post.max_id == addr_aggr.max_id + addrs_length;
     }
 
     /// The addr has 0x as it's prefix.
