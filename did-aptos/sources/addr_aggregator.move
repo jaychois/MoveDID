@@ -143,11 +143,15 @@ module my_addr::addr_aggregator {
         assert!(addrs_length == addr_infos_length, ERR_ADDR_PARAM_VECTOR_LENGHT_MISMATCH);
 
         let addr_aggr = borrow_global_mut<AddrAggregator>(signer::address_of(acct));
+        let old_max_id = addr_aggr.max_id; //for spec
+        let old_len = vector::length(&addr_aggr.addrs); //for spec
 
         let i = 0;
         while ({
             spec {
                 invariant i <= addrs_length;
+                invariant len(addr_aggr.addrs) == old_len + i;
+                invariant addr_aggr.max_id == old_max_id + i;
             };
             i < addrs_length
         }) {

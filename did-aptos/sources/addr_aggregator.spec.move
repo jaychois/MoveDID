@@ -45,10 +45,10 @@ spec my_addr::addr_aggregator {
         addr_infos : vector<AddrInfo>
     ) {
         let addrs_length = len(addrs);
-        let addr_aggr = global<AddrAggregator>(signer::address_of(acct));
-        let post addr_aggr_post = global<AddrAggregator>(signer::address_of(acct));
+        let old_addr_aggr = global<AddrAggregator>(signer::address_of(acct));
+        let post addr_aggr = global<AddrAggregator>(signer::address_of(acct));
         ensures len(addrs) == len(addr_infos);
-        ensures addr_aggr_post.max_id == addr_aggr.max_id + addrs_length;
+        ensures addr_aggr.max_id == old_addr_aggr.max_id + addrs_length;
     }
 
     /// The addr has 0x as it's prefix.
